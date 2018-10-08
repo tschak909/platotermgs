@@ -13,7 +13,7 @@ unsigned char already_started=false;
 void main(void)
 {
   screen_init();
-  ShowPLATO(splash,1343);
+  ShowPLATO(splash,sizeof(splash));
   terminal_initial_position();
   io_init();
   for (;;)

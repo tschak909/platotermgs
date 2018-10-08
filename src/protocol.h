@@ -23,9 +23,9 @@ typedef	unsigned char	padChar;
 typedef	short	padWord;
 typedef	padWord	charData[8];
 typedef	struct {
-	padByte	red,
-		green,
-		blue;
+  padByte	_red;
+  padByte	_green;
+  padByte	_blue;
 	} padRGB;
 
 typedef struct {

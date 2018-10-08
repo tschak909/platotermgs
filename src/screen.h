@@ -18,41 +18,6 @@
 void screen_init(void);
 
 /**
- * screen_load_driver()
- * Load the TGI driver
- */
-void screen_load_driver(void);
-
-/**
- * screen_init_hook()
- * Called after tgi_init to set any special features, e.g. nmi trampolines.
- */
-void screen_init_hook(void);
-
-/**
- * screen_cycle_foreground()
- * Go to the next foreground color in palette
- */
-void screen_cycle_foreground(void);
-
-/**
- * screen_cycle_background()
- * Go to the next background color in palette
- */
-void screen_cycle_background(void);
-
-/**
- * screen_cycle_border()
- * Go to the next border color in palette
- */
-void screen_cycle_border(void);
-
-/**
- * screen_update_colors() - Set the terminal colors
- */
-void screen_update_colors(void);
-
-/**
  * screen_wait(void) - Sleep for approx 16.67ms
  */
 void screen_wait(void);

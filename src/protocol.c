@@ -718,18 +718,18 @@ GoColor (void)
   switch (Phase)
     {
     case 0:
-      theColor.blue = (theChar & 0x3f);
+      theColor._blue = (theChar & 0x3f);
       break;
     case 1:
-      theColor.blue |= (theChar & 0x03) << 6;
-      theColor.green = (theChar & 0x3c) >> 2;
+      theColor._blue |= (theChar & 0x03) << 6;
+      theColor._green = (theChar & 0x3c) >> 2;
       break;
     case 2:
-      theColor.green |= (theChar & 0x0f) << 4;
-      theColor.red = (theChar & 0x30) >> 4;
+      theColor._green |= (theChar & 0x0f) << 4;
+      theColor._red = (theChar & 0x30) >> 4;
       break;
     case 3:
-      theColor.red |= (theChar & 0x3f) << 2;
+      theColor._red |= (theChar & 0x3f) << 2;
       break;
     }
   if (Phase < 3)

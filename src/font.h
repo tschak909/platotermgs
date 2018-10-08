@@ -1,6 +1,9 @@
 #ifndef FONT_H
 #define FONT_H
 
+#define FONT_SIZE_X 5
+#define FONT_SIZE_Y 6
+
 /**
  * Font definitions for font memories M0 and M1
  */

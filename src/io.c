@@ -1,8 +1,15 @@
 #include "src/io.h"
 #include "src/protocol.h"
+#include "src/tcpip.h"
 
 void io_init(void)
 {
+  word status;
+  status=TCPIPStatus();
+  if (_toolErr)
+    {
+      LoadOneTool(54,0x200);
+    }
 }
 
 void io_init_funcptrs(void)
