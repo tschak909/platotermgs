@@ -1,4 +1,5 @@
 PLATO_OBJS=obj/io.a \
+	obj/marinetti.a \
 	obj/keyboard.a \
 	obj/main.a \
 	obj/protocol.a \
@@ -7,6 +8,7 @@ PLATO_OBJS=obj/io.a \
 	obj/touch.a
 
 PLATO_OBJS_PREFIX=obj/io \
+	obj/marinetti \
 	obj/keyboard \
 	obj/main \
 	obj/protocol \

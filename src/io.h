@@ -32,6 +32,7 @@ void io_open(void);
  * io_send_byte(b) - Send specified byte out
  */
 void io_send_byte(unsigned char b);
+void io_send(unsigned char* data, int size);
 
 /**
  * io_main() - The IO main loop
