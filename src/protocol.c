@@ -665,6 +665,9 @@ GoMode (void)
     case mBack:
       screen_background(&theColor);
       break;
+    case mPaint:
+      screen_paint(&CurCoord);
+      break;
     }
   CMode = PMode;
   CType = PType;
