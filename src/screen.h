@@ -28,6 +28,22 @@ void screen_wait(void);
 void screen_beep(void);
 
 /**
+ * screen_remap_palette(void)
+ * Remap the screen palette
+ */
+void screen_remap_palette(void);
+
+/**
+ * screen_color_matching(theColor)
+ */
+short screen_color_matching(padRGB* theColor);
+
+/**
+ * Set selected screen color (fg/bg)
+ */
+short screen_color(padRGB* theColor);
+
+/**
  * screen_clear - Clear the screen
  */
 void screen_clear(void);

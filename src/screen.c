@@ -10,6 +10,11 @@ padPt TTYLoc;
 
 int foregroundColor=white;
 int backgroundColor=black;
+padRGB background_rgb={0,0,0};
+padRGB foreground_rgb={255,255,255};
+unsigned char highestColorIndex;
+
+padRGB palette[16];
 
 extern padBool FastText; /* protocol.c */
 
@@ -39,11 +44,100 @@ void screen_beep(void)
 }
 
 /**
+ * screen_remap_palette(void)
+ * Remap the screen palette
+ */
+void screen_remap_palette(void)
+{
+  int i=0;
+  for (i=0;i<16;++i)
+    {
+      int new_red=palette[i]._red>>4;     //
+      int new_green=palette[i]._green>>4; // quantise to 4-bit
+      int new_blue=palette[i]._blue>>4;   //
+      int new_color=(new_blue)|(new_green<<4)|(new_red<<8);
+      SetColorEntry(0,i,new_color);
+    }
+}
+
+/**
+ * Set foreground color
+ */
+void screen_foreground(padRGB* theColor)
+{
+  short index;
+  index=screen_color(theColor);
+  foregroundColor=index;
+  foreground_rgb._red=theColor->_red;
+  foreground_rgb._green=theColor->_green;
+  foreground_rgb._blue=theColor->_blue;
+}
+
+/**
+ * Set background color
+ */
+void screen_background(padRGB* theColor)
+{
+  short index;
+  index=screen_color(theColor);
+  backgroundColor=index;
+  background_rgb._red=theColor->_red;
+  background_rgb._green=theColor->_green;
+  background_rgb._blue=theColor->_blue;
+}
+
+/**
+ * screen_color_matching(theColor)
+ */
+short screen_color_matching(padRGB* theColor)
+{
+  int i=0;
+  for (i=0;i<16;++i)
+    {
+      if ((palette[i]._red  ==(theColor->_red)) &&
+	  (palette[i]._green==(theColor->_green)) &&
+	  (palette[i]._blue ==(theColor->_blue)))
+        return i;
+      else if (i>highestColorIndex)
+        return ++highestColorIndex;
+    }
+  return -1;
+}
+
+/**
+ * Set selected screen color (fg/bg)
+ */
+short screen_color(padRGB* theColor)
+{
+  short index=screen_color_matching(theColor);
+  palette[index]._red=theColor->_red;
+  palette[index]._green=theColor->_green;
+  palette[index]._blue=theColor->_blue;
+  screen_remap_palette();
+  return index;
+}
+
+/**
  * screen_clear - Clear the screen
  */
 void screen_clear(void)
 {
-  ClearScreen(0);
+  memset(palette,-1,sizeof(palette));
+  highestColorIndex=0;
+  palette[0]=background_rgb;
+  palette[1]=foreground_rgb;
+  ++highestColorIndex;
+
+  if ((background_rgb._red   != foreground_rgb._red) &&
+      (background_rgb._green != foreground_rgb._green) &&
+      (background_rgb._blue  != foreground_rgb._blue))
+    {
+      palette[1]=foreground_rgb;
+      ++highestColorIndex;
+    }
+
+  screen_remap_palette();
+  ClearScreen(0); // 0 is always the new remapped background color.
 }
 
 /**
