@@ -5,8 +5,6 @@
 #include <Memory.h>
 #include <texttool.h>
 
-#include <quickdraw.h>
-
 #include "src/io.h"
 #include "src/protocol.h"
 

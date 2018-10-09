@@ -11,7 +11,7 @@
  */
 
 /* X and Y tables used to scale 512x512 PLATO display to 320x192 */
-unsigned short scalex[]={
+unsigned int scalex[]={
 0,1,2,2,3,4,4,5,
 5,6,7,7,8,9,9,10,
 10,11,12,12,13,14,14,15,
@@ -78,7 +78,7 @@ unsigned short scalex[]={
 315,316,317,317,318,319,319,320,
 };
 
-unsigned short scaley[]={
+unsigned int scaley[]={
 192,192,191,191,191,190,190,189,
 189,189,188,188,188,187,187,186,
 186,186,185,185,185,184,184,183,

@@ -132,7 +132,7 @@ unsigned char terminal_get_configuration(void)
 /**
  * terminal_get_char_address(void) - Return the base address of the character set.
  */
-unsigned short terminal_get_char_address(void)
+unsigned int terminal_get_char_address(void)
 {
   return 0x3000; /* What the? Shouldn't this be 0x3800? */
 }

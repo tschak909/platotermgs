@@ -28,6 +28,7 @@ void main(void)
   io_init();
   for (;;)
     {
+      GetNextEvent(everyEvent,&event);
       keyboard_main();
       io_main();
     }

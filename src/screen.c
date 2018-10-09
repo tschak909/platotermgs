@@ -8,8 +8,8 @@ unsigned char CharWide=8;
 unsigned char CharHigh=16;
 padPt TTYLoc;
 
-short foregroundColor=white;
-short backgroundColor=black;
+int foregroundColor=white;
+int backgroundColor=black;
 
 extern padBool FastText; /* protocol.c */
 
@@ -51,7 +51,7 @@ void screen_clear(void)
  */
 void screen_block_draw(padPt* Coord1, padPt* Coord2)
 {
-  Rect rect={scalex[Coord1->x],scaley[Coord1->y],scalex[Coord2->x],scaley[Coord2->y]};
+  Rect rect={scalex[Coord1->y],scaley[Coord1->x],scalex[Coord2->y],scaley[Coord2->x]};
 
   if (CurMode==ModeErase || CurMode==ModeInverse)
     SetSolidPenPat(backgroundColor);
@@ -94,19 +94,19 @@ void screen_line_draw(padPt* Coord1, padPt* Coord2)
  */
 void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
 {
-    short offset; /* due to negative offsets */
-  unsigned short x;      /* Current X and Y coordinates */
-  unsigned short y;
-  unsigned short* px;   /* Pointers to X and Y coordinates used for actual plotting */
-  unsigned short* py;
+    int offset; /* due to negative offsets */
+  unsigned int x;      /* Current X and Y coordinates */
+  unsigned int y;
+  unsigned int* px;   /* Pointers to X and Y coordinates used for actual plotting */
+  unsigned int* py;
   unsigned char i; /* current character counter */
   unsigned char a; /* current character byte */
   unsigned char j,k; /* loop counters */
   char b; /* current character row bit signed */
   unsigned char width=FONT_SIZE_X;
   unsigned char height=FONT_SIZE_Y;
-  unsigned short deltaX=1;
-  unsigned short deltaY=1;
+  unsigned int deltaX=1;
+  unsigned int deltaY=1;
   unsigned char mainColor=foregroundColor;
   unsigned char altColor=backgroundColor;
   unsigned char *p;
@@ -320,6 +320,18 @@ void screen_tty_char(padByte theChar)
     screen_clear();
     TTYLoc.y=495;
   }
+}
+
+void screen_foreground(padRGB* theColor)
+{
+}
+
+void screen_background(padRGB* theColor)
+{
+}
+
+void screen_paint(padPt* Coord)
+{
 }
 
 /**

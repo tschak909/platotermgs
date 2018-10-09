@@ -20,7 +20,7 @@
 typedef	unsigned char	padByte;
 typedef	enum {padF, padT} padBool;
 typedef	unsigned char	padChar;
-typedef	short	padWord;
+typedef	int	padWord;
 typedef	padWord	charData[8];
 typedef	struct {
   padByte	_red;
@@ -61,7 +61,7 @@ void Ext(padWord theKey);
 void Echo(padWord theKey);
 void SetCommand(Mode theMode, DataType theType);
 void SetMode(Mode theMode, DataType theType);
-void FixXY(short DX, short DY);
+void FixXY(int DX, int DY);
 void Superx(void);
 void Subx(void);
 void Marginx(void);

@@ -62,7 +62,7 @@ unsigned char terminal_get_configuration(void);
 /**
  * terminal_get_char_address(void) - Return the base address of the character set.
  */
-unsigned short terminal_get_char_address(void);
+unsigned int terminal_get_char_address(void);
 
 /**
  * terminal_mem_read - Read a byte of program memory.

@@ -199,15 +199,11 @@ void
 Key (padWord theKey)
 {
   unsigned char resp[3];
-  if (theKey >> 7)
+  if ((theKey >> 7)>0)
     {
-      resp[0]=0x1b;
-      resp[1]=0x40|(theKey&0x3f);
-      resp[2]=0x60|((theKey>>6)&0x0f);
-      io_send(resp,3);
-      /* io_send_byte (0x1b); */
-      /* io_send_byte (0x40 | (theKey & 0x3f)); */
-      /* io_send_byte (0x60 | ((theKey >> 6) & 0x0f)); */
+      io_send_byte (0x1b);
+      io_send_byte (0x40 | (theKey & 0x3f));
+      io_send_byte (0x60 | ((theKey >> 6) & 0x0f));
     }
   else
     {
@@ -219,11 +215,8 @@ Key (padWord theKey)
 
       if (theKey & 0x80)
 	{
-	  resp[0]=0x1b;
-	  resp[1]=theKey&0x7F;
-	  io_send(resp,2);
-	  /* io_send_byte (0x1b); */
-	  /* io_send_byte (theKey & 0x7f); */
+	  io_send_byte (0x1b);
+	  io_send_byte (theKey & 0x7f);
 	}
       else
 	{
@@ -598,16 +591,16 @@ SSFx (void)
       terminal_ext_allow ((theWord >> 3) & 1);
       touch_allow ((theWord >> 5) & 1);
     }
-  else if ((theWord >> 9) & 1)
+  else if (((theWord >> 9) & 1)>0)
     {
       terminal_set_ext_in (device);
-      if (!((theWord >> 8) & 1))
+      if (!((theWord >> 8) & 1)>0)
 	Ext (terminal_ext_in ());
     }
   else
     {
       terminal_set_ext_out (device);
-      if (!((theWord >> 8) & 1))
+      if (!((theWord >> 8) & 1)>0)
 	terminal_ext_out (theWord & 0xFF);
     }
 }
@@ -667,10 +660,10 @@ GoMode (void)
       terminal_mode_7 (theWord);
       break;
     case mFore:
-      /* ForeGround (&theColor); */
+      screen_foreground(&theColor);
       break;
     case mBack:
-      /* BackGround (&theColor); */
+      screen_background(&theColor);
       break;
     }
   CMode = PMode;

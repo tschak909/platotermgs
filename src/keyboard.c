@@ -1,10 +1,11 @@
-
+#include <Event.h>
+#include <QuickDraw.h>
 #include "src/keyboard.h"
 #include "src/key.h"
 #include "src/protocol.h"
 #include "src/io.h"
 
-unsigned char ch;
+extern EventRecord event;
 
 void keyboard_out(unsigned char platoKey)
 {
@@ -23,19 +24,28 @@ void keyboard_out(unsigned char platoKey)
 
 void keyboard_main(void)
 {
-  /* if (kbhit()) */
-  /*   { */
-  /*     ch=cgetc(); */
-  /*     ShowPLATO(&ch,1); // temporary half duplex echo. */
-  /*     if (TTY) */
-  /* 	{ */
-  /* 	  keyboard_out_tty(ch); */
-  /* 	} */
-  /*     else */
-  /* 	{ */
-  /* 	  keyboard_out(key_to_pkey[ch]); */
-  /* 	}  */
-  /*   } */
+  // Keyboard events already captured in main()
+  if (event.what == keyDownEvt)
+    {
+      unsigned char key=event.message;
+      unsigned char tmp[8];
+      if (event.modifiers & appleKey)
+	{
+	  // Special keys
+	}
+      else if (event.modifiers & shiftKey)
+	{
+	  keyboard_out(shift_key_to_pkey[key]);
+	}
+      else if (TTY)
+	{
+	  keyboard_out_tty(key);
+	}
+      else
+	{
+	  keyboard_out(key_to_pkey[key]);
+	}
+    }
 }
 
 void keyboard_clear(void)
