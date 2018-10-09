@@ -1,5 +1,7 @@
+#include <Memory.h>
 #include <quickdraw.h>
 #include <orca.h>
+#include <types.h>
 #include "src/protocol.h"
 #include "src/font.h"
 #include "src/scale.h"
@@ -13,8 +15,9 @@ int backgroundColor=black;
 padRGB background_rgb={0,0,0};
 padRGB foreground_rgb={255,255,255};
 unsigned char highestColorIndex;
-
 padRGB palette[16];
+
+Handle poly;
 
 extern padBool FastText; /* protocol.c */
 
@@ -414,14 +417,6 @@ void screen_tty_char(padByte theChar)
     screen_clear();
     TTYLoc.y=495;
   }
-}
-
-void screen_foreground(padRGB* theColor)
-{
-}
-
-void screen_background(padRGB* theColor)
-{
 }
 
 void screen_paint(padPt* Coord)
