@@ -41,6 +41,7 @@ typedef struct
 } _jlScanDataT;
 
 static jlStackT *_jlFillStackTop = NULL;
+static unsigned char           _jlDrawFillColor      = 0;
 
 _jlScanDataT *
 _jlDrawFillNewSegment (int startX, int endX, int y, signed char dir,
@@ -70,7 +71,7 @@ _jlDrawFillAddLine (int startX, int endX, int y, int ignoreStart,
 	{
 	  // Unrolled conents to reduce comparison complexity.
 	  if ((isNextInDir || x < ignoreStart || x >= ignoreEnd)
-	      && (GetPixel (x, y) == foregroundColor))
+	      && (GetPixel (x, y) == _jlDrawFillColor))
 	    {
 	      MoveTo (x, y);
 	      Line(0,0);
@@ -90,7 +91,7 @@ _jlDrawFillAddLine (int startX, int endX, int y, int ignoreStart,
 	{
 	  // Unrolled conents to reduce comparison complexity.
 	  if ((isNextInDir || x < ignoreStart || x >= ignoreEnd)
-	      && (GetPixel (x, y) != foregroundColor))
+	      && (GetPixel (x, y) != _jlDrawFillColor))
 	    {
 	      MoveTo (x, y);
 	      Line(0,0);
@@ -128,8 +129,8 @@ _jlDrawFill (int x, int y, bool how)
   int startX;
   int endX;
 
-  // how == true;   Fill on top of foregroundColor
-  // how == false;  Fill on top of any color until we encounter foregroundColor
+  // how == true;   Fill on top of _jlDrawFillColor
+  // how == false;  Fill on top of any color until we encounter _jlDrawFillColor
 
   MoveTo (x, y);
   Line(0,0);
@@ -145,7 +146,7 @@ _jlDrawFill (int x, int y, bool how)
 	  if (how)
 	    {
 	      while (startX > 0
-		     && (GetPixel (startX - 1, r->Y) == foregroundColor))
+		     && (GetPixel (startX - 1, r->Y) == _jlDrawFillColor))
 		{
 		  MoveTo (--startX, r->Y);
 		  Line(0,0);
@@ -154,7 +155,7 @@ _jlDrawFill (int x, int y, bool how)
 	  else
 	    {
 	      while (startX > 0
-		     && (GetPixel (startX - 1, r->Y) != foregroundColor))
+		     && (GetPixel (startX - 1, r->Y) != _jlDrawFillColor))
 		{
 		  MoveTo (--startX, r->Y);
 		  Line(0,0);
@@ -166,7 +167,7 @@ _jlDrawFill (int x, int y, bool how)
 	  if (how)
 	    {
 	      while (endX < width
-		     && (GetPixel (endX, r->Y) == foregroundColor))
+		     && (GetPixel (endX, r->Y) == _jlDrawFillColor))
 		{
 		  MoveTo (endX++, r->Y);
 		  Line(0,0);
@@ -175,7 +176,7 @@ _jlDrawFill (int x, int y, bool how)
 	  else
 	    {
 	      while (endX < width
-		     && (GetPixel (endX, r->Y) == foregroundColor))
+		     && (GetPixel (endX, r->Y) == _jlDrawFillColor))
 		{
 		  MoveTo (endX++, r->Y);
 		  Line(0,0);
@@ -198,7 +199,7 @@ _jlDrawFill (int x, int y, bool how)
 void
 jlDrawFill (int x, int y)
 {
-  foregroundColor = GetPixel (x, y);
+  _jlDrawFillColor=GetPixel(x,y);
   _jlDrawFill (x, y, true);
 }
 
@@ -206,7 +207,6 @@ jlDrawFill (int x, int y)
 void
 jlDrawFillTo (int x, int y, byte color)
 {
-  foregroundColor = color;
   _jlDrawFill (x, y, false);
 }
 
