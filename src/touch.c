@@ -1,6 +1,10 @@
+#include <Event.h>
 #include <quickdraw.h>
+#include <stdio.h>
+#include <math.h>
 #include "src/touch.h"
 
+extern EventRecord event;
 static unsigned char touch_cursor_visible=0;
 
 /**
@@ -15,6 +19,16 @@ void touch_init(void)
  */
 void touch_main(void)
 {
+  Point* mouseLocPtr;
+  padPt Coord;
+  
+  if (event.what == mouseUpEvt)
+    {
+      GetMouse(mouseLocPtr);
+      Coord.x=scaletx[mouseLocPtr->h];
+      Coord.y=scalety[mouseLocPtr->v];
+      Touch(&Coord);
+     }
 }
 
 /**

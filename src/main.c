@@ -31,5 +31,6 @@ void main(void)
       GetNextEvent(everyEvent,&event);
       keyboard_main();
       io_main();
+      touch_main();
     }
 }
