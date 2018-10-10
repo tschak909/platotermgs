@@ -2,6 +2,7 @@
 #include <quickdraw.h>
 #include <orca.h>
 #include <types.h>
+#include "src/screen_fill.h"
 #include "src/protocol.h"
 #include "src/font.h"
 #include "src/scale.h"
@@ -148,8 +149,13 @@ void screen_clear(void)
  */
 void screen_block_draw(padPt* Coord1, padPt* Coord2)
 {
-  Rect rect={scalex[Coord1->y],scaley[Coord1->x],scalex[Coord2->y],scaley[Coord2->x]};
+  Rect rect;
 
+  rect.v1=scaley[Coord1->y];
+  rect.h1=scalex[Coord1->x];
+  rect.v2=scaley[Coord2->y];
+  rect.h2=scalex[Coord2->x];
+  
   if (CurMode==ModeErase || CurMode==ModeInverse)
     SetSolidPenPat(backgroundColor);
   else
@@ -421,6 +427,7 @@ void screen_tty_char(padByte theChar)
 
 void screen_paint(padPt* Coord)
 {
+  /* jlDrawFillTo(scalex[Coord->x],scaley[Coord->y],foregroundColor); */
 }
 
 /**
