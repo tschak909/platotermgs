@@ -16,11 +16,11 @@ void main(void)
 {
   mmID=MMStartUp();
 
-  dpHandle = NewHandle(0x0100, mmID,
-		       attrBank | attrPage |attrNoCross | attrFixed | attrLocked,
-		       0x000000);
+  dpHandle = NewHandle(0x0600, mmID,
+  		       attrBank | attrPage |attrNoCross | attrFixed | attrLocked,
+  		       0x000000);
 
-  EMStartUp((Word)*dpHandle, 0x14, 0, 0, 0, 0, mmID);
+  EMStartUp((Word)*dpHandle, 0x14, 0, 320, 0, 200, mmID);
 
   screen_init();
   ShowPLATO(splash,sizeof(splash));

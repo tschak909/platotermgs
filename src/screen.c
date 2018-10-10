@@ -1,3 +1,5 @@
+#include <Control.h>
+#include <Dialog.h>
 #include <Memory.h>
 #include <quickdraw.h>
 #include <orca.h>
@@ -18,9 +20,9 @@ padRGB foreground_rgb={255,255,255};
 unsigned char highestColorIndex;
 padRGB palette[16];
 
-Handle poly;
-
 extern padBool FastText; /* protocol.c */
+extern Word mmID; /* main.c */
+extern Handle dpHandle; /* main.c */
 
 /**
  * screen_init() - Set up the screen
@@ -129,7 +131,6 @@ void screen_clear(void)
   memset(palette,-1,sizeof(palette));
   highestColorIndex=0;
   palette[0]=background_rgb;
-  palette[1]=foreground_rgb;
   ++highestColorIndex;
 
   if ((background_rgb._red   != foreground_rgb._red) &&
