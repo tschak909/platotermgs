@@ -2,6 +2,7 @@
 #include <Dialog.h>
 #include <Memory.h>
 #include <quickdraw.h>
+#include <qdaux.h>
 #include <orca.h>
 #include <types.h>
 #include "src/screen_fill.h"
@@ -33,6 +34,7 @@ void screen_init(void)
   SetPenMode(0);
   SetPenSize(1,1);
   SetPenMode(0);
+  QDAuxStartUp();
 }
 
 /**
