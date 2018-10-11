@@ -430,14 +430,15 @@ void screen_tty_char(padByte theChar)
 
 void screen_paint(padPt* Coord)
 {
-  /* LocInfo loc; */
-  /* Rect rect; */
-  /* LeakTable leakTable={1,{backgroundColor}}; */
-  /* SetSolidPenPat(backgroundColor); */
-  /* SetSolidBackPat(foregroundColor); */
-  /* GetPortLoc(&loc); */
-  /* GetPortRect(&rect); */
-  /* SeedFill(&loc,&rect,&loc,&rect,scalex[Coord->x],scaley[Coord->y],0x1002,(PatternPtr)0xFFFFFFFF,(Pointer)&leakTable); */
+  LocInfo loc;
+  Rect rect;
+  LeakTable leakTable={1,{GetPixel(scalex[Coord->x],scaley[Coord->y])}};
+  Pattern pattern;
+  SetSolidPenPat(foregroundColor);
+  GetPenPat(&pattern);
+  GetPortLoc(&loc);
+  GetPortRect(&rect);
+  SeedFill(&loc,&rect,&loc,&rect,scalex[Coord->x],scaley[Coord->y],0x1002,(PatternPtr)pattern,(Pointer)&leakTable);
 }
 
 /**
