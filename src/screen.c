@@ -430,7 +430,14 @@ void screen_tty_char(padByte theChar)
 
 void screen_paint(padPt* Coord)
 {
-  /* jlDrawFillTo(scalex[Coord->x],scaley[Coord->y],foregroundColor); */
+  /* LocInfo loc; */
+  /* Rect rect; */
+  /* LeakTable leakTable={1,{backgroundColor}}; */
+  /* SetSolidPenPat(backgroundColor); */
+  /* SetSolidBackPat(foregroundColor); */
+  /* GetPortLoc(&loc); */
+  /* GetPortRect(&rect); */
+  /* SeedFill(&loc,&rect,&loc,&rect,scalex[Coord->x],scaley[Coord->y],0x1002,(PatternPtr)0xFFFFFFFF,(Pointer)&leakTable); */
 }
 
 /**
