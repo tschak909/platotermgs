@@ -36,6 +36,7 @@ void io_init(void)
   
   while (resolved==false)
     {
+      prompt_connect();
       if (ResolveHost(hostname,&cvt)==false)
 	{
 	  prompt_display("Couldn't Resolve Hostname.");
