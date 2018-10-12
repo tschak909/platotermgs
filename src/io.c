@@ -15,15 +15,40 @@ static cvtRec cvt;
 static word ipid;
 static int ok;
 static int err;
+static int mf;
 
+static char hostname[64];
+static char ipaddrstr[64];
+static unsigned char resolved=false;
 static unsigned char buffer[2048];
 static unsigned buffer_size;
 static unsigned char out_buffer[4];
 
 void io_init(void)
 {
-  StartUpTCP(NULL);
-  ResolveHost("IRATA.ONLINE:8005",&cvt);
+  mf=StartUpTCP(NULL);
+
+  if (mf<0)
+    {
+      prompt_display_no_marinetti();
+      
+    }
+  
+  while (resolved==false)
+    {
+      if (ResolveHost(hostname,&cvt)==false)
+	{
+	  prompt_display("Couldn't Resolve Hostname.");
+	  resolved=false;
+	}
+      else
+	{
+	  TCPIPConvertIPToCASCII(cvt.cvtIPAddress,ipaddrstr,0);
+	  prompt_display_ipaddress(ipaddrstr);
+	  resolved=true;
+	}
+    }
+  
   ipid=TCPIPLogin(mmID,cvt.cvtIPAddress,cvt.cvtPort,0,0x0040);
   TCPIPOpenTCP(ipid);
   ok = WaitForStatus(ipid,1 << 0x0004); // TCPsESTABLISHED

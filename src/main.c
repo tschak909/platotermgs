@@ -6,13 +6,15 @@
 #include "src/io.h"
 #include "src/terminal.h"
 #include "src/keyboard.h"
+#include "src/prompt.h"
 
 unsigned char already_started=false;
+unsigned char running=false;
 EventRecord event;
 word mmID;
 Handle dpHandle=NULL;
 
-void main(void)
+int main(void)
 {
   mmID=MMStartUp();
 
@@ -25,12 +27,25 @@ void main(void)
   screen_init();
   ShowPLATO(splash,sizeof(splash));
   terminal_initial_position();
-  io_init();
-  for (;;)
+  if (io_init()==false)
     {
-      GetNextEvent(everyEvent,&event);
-      keyboard_main();
-      io_main();
-      touch_main();
+      screen_done();
     }
+  else
+    {
+      running=true;
+      while (running==true)
+	{
+	  GetNextEvent(everyEvent,&event);
+	  keyboard_main();
+	  io_main();
+	  touch_main();
+	}
+    }
+
+  io_done();
+  touch_done();
+  screen_done();
+  return 0;
+  
 }

@@ -430,6 +430,7 @@ void screen_tty_char(padByte theChar)
 
 void screen_paint(padPt* Coord)
 {
+#ifdef SCREEN_FILL
   LocInfo loc;
   Rect rect;
   LeakTable leakTable={1,{GetPixel(scalex[Coord->x],scaley[Coord->y])}};
@@ -439,6 +440,7 @@ void screen_paint(padPt* Coord)
   GetPortLoc(&loc);
   GetPortRect(&rect);
   SeedFill(&loc,&rect,&loc,&rect,scalex[Coord->x],scaley[Coord->y],0x1002,(PatternPtr)pattern,(Pointer)&leakTable);
+#endif
 }
 
 /**
