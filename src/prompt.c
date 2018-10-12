@@ -11,9 +11,10 @@ void prompt_clr(void)
 {
   Rect clrRect;
   clrRect.h1=0;
-  clrRect.v1=192;
-  clrRect.h2=319;
-  clrRect.v2=199;
+  clrRect.v1=184;
+  clrRect.h2=320;
+  clrRect.v2=200;
+  SetSolidBackPat(0);
   EraseRect(&clrRect);
 }
 
@@ -22,10 +23,10 @@ void prompt_clr(void)
  */
 void prompt_delay(void)
 {
-  int i;
-  for (i=0;i<1000;i++)
-    {
-    }
+  /* int i; */
+  /* for (i=0;i<1000;i++) */
+  /*   { */
+  /*   } */
 }
 
 /**
@@ -34,13 +35,21 @@ void prompt_delay(void)
 void prompt_connect(char* hostname)
 {
   prompt_clr();
-  MoveTo(0,192);
+  MoveTo(0,191);
   printf("Hostname or <ENTER> for IRATA.ONLINE\n> ");
-  scanf("%s",hostname);
-  if (strcmp(hostname,"")==0)
+  gets(hostname);
+
+  if (hostname[0]=='\0') // empty string, use default.
     {
-      strcpy(hostname,"IRATA.ONLINE");
+      strcpy(hostname,"IRATA.ONLINE:8005");
     }
+
+  // Append port 8005 if a port isn't specified.
+  if (strstr(hostname,":")==NULL)
+    {
+      strcat(hostname,":8005");
+    }
+  
 }
 
 /**
@@ -49,7 +58,7 @@ void prompt_connect(char* hostname)
 void prompt_display(char* text)
 {
   prompt_clr();
-  MoveTo(0,192);
+  MoveTo(0,191);
   printf("%s",text);
   prompt_delay();
 }
@@ -60,7 +69,7 @@ void prompt_display(char* text)
 void prompt_display_ipaddress(char* text)
 {
   prompt_clr();
-  MoveTo(0,192);
+  MoveTo(0,191);
   printf("Address Resolved to:\n");
   printf("%s",text);
   prompt_delay();

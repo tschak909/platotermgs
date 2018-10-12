@@ -8,6 +8,7 @@
 #include "src/io.h"
 #include "src/protocol.h"
 
+extern unsigned char running;
 extern EventRecord event;
 extern word mmID;
 
@@ -24,19 +25,19 @@ static unsigned char buffer[2048];
 static unsigned buffer_size;
 static unsigned char out_buffer[4];
 
-void io_init(void)
+unsigned char io_init(void)
 {
   mf=StartUpTCP(NULL);
 
   if (mf<0)
     {
       prompt_display_no_marinetti();
-      
+      return false;
     }
   
   while (resolved==false)
     {
-      prompt_connect();
+      prompt_connect(&hostname);
       if (ResolveHost(hostname,&cvt)==false)
 	{
 	  prompt_display("Couldn't Resolve Hostname.");
@@ -49,10 +50,14 @@ void io_init(void)
 	  resolved=true;
 	}
     }
-  
+
+  prompt_display("Connecting...");
   ipid=TCPIPLogin(mmID,cvt.cvtIPAddress,cvt.cvtPort,0,0x0040);
   TCPIPOpenTCP(ipid);
   ok = WaitForStatus(ipid,1 << 0x0004); // TCPsESTABLISHED
+  prompt_display("Connected...");
+  running=true;
+  return true;
 }
 
 void io_init_funcptrs(void)

@@ -16,7 +16,7 @@
 /**
  * io_init() - Set-up the I/O
  */
-void io_init(void);
+unsigned char io_init(void);
 
 /**
  * io_init_funcptrs() - Set up I/O function pointers
