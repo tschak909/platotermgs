@@ -31,4 +31,9 @@ void prompt_clear(void);
  */
 void prompt_display_no_marinetti(void);
 
+/**
+ * Display exit prompt
+ */
+unsigned char prompt_exit(void);
+
 #endif

@@ -88,3 +88,13 @@ void prompt_display_no_marinetti(void)
   ch=getchar();
   running=false;
 }
+
+/**
+ * Display exit prompt
+ */
+unsigned char prompt_exit(void)
+{
+  unsigned key;
+  prompt_display("Exit PLATOTerm (Y/N)? ");
+  return (key=='y' || key=='Y');
+}

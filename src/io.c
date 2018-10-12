@@ -104,4 +104,10 @@ void io_recv_serial(void)
 
 void io_done()
 {
+  prompt_display("Closing Connection...");
+  TCPIPCloseTCP(ipid);
+  WaitForStatus(ipid, (1 << TCPSCLOSED) | (1 << TCPSTIMEWAIT));
+  prompt_display("Logging out...");
+  if (ipid != -1) TCPIPLogout(ipid);
+  if (mf > 0) ShutDownTCP(mf, false, NULL);
 }

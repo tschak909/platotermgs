@@ -1,11 +1,15 @@
+#include <Memory.h>
 #include <Event.h>
 #include <QuickDraw.h>
 #include "src/keyboard.h"
 #include "src/key.h"
 #include "src/protocol.h"
 #include "src/io.h"
+#include "src/prompt.h"
 
 extern EventRecord event;
+extern unsigned char running;
+extern Handle dpHandle;
 
 void keyboard_out(unsigned char platoKey)
 {
@@ -32,6 +36,21 @@ void keyboard_main(void)
       if (event.modifiers & appleKey)
 	{
 	  // Special keys
+	  if (key=='x') // APPLE-X, exit
+	    {
+	      if (prompt_exit()==true)
+		running=false;
+	        io_done();
+		touch_done();
+		screen_done();
+		EMShutDown();
+		DisposeHandle(dpHandle);
+		exit(0);
+	    }
+	  else
+	    {
+	      prompt_clr();
+	    }
 	}
       else if (event.modifiers & shiftKey)
 	{
