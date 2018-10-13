@@ -441,6 +441,7 @@ void screen_paint(padPt* Coord)
   GetPortRect(&rect);
   SeedFill(&loc,&rect,&loc,&rect,scalex[Coord->x],scaley[Coord->y],0x1002,(PatternPtr)pattern,(Pointer)&leakTable);
 #endif
+  /* jlDrawFill(scalex[Coord->x],scaley[Coord->y]); */
 }
 
 /**
