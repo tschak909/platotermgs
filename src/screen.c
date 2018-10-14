@@ -21,6 +21,11 @@ padRGB foreground_rgb={255,255,255};
 unsigned char highestColorIndex;
 padRGB palette[16];
 
+Handle fontHandle;
+Font* fontPtr;
+
+static char textBuf[128];
+
 extern padBool FastText; /* protocol.c */
 extern Word mmID; /* main.c */
 extern Handle dpHandle; /* main.c */
@@ -35,6 +40,11 @@ void screen_init(void)
   SetPenSize(1,1);
   SetPenMode(0);
   QDAuxStartUp();
+
+  // Initialize font handle and copy font into it.
+  fontHandle=NewHandle(2575,mmID,0,NULL);
+  PtrToHand((Pointer)font,fontHandle,2575);
+  fontPtr=*(FontHndl)fontHandle;
 }
 
 /**
@@ -200,198 +210,50 @@ void screen_line_draw(padPt* Coord1, padPt* Coord2)
  */
 void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
 {
-    int offset; /* due to negative offsets */
-  unsigned int x;      /* Current X and Y coordinates */
-  unsigned int y;
-  unsigned int* px;   /* Pointers to X and Y coordinates used for actual plotting */
-  unsigned int* py;
-  unsigned char i; /* current character counter */
-  unsigned char a; /* current character byte */
-  unsigned char j,k; /* loop counters */
-  char b; /* current character row bit signed */
-  unsigned char width=FONT_SIZE_X;
-  unsigned char height=FONT_SIZE_Y;
-  unsigned int deltaX=1;
-  unsigned int deltaY=1;
-  unsigned char mainColor=foregroundColor;
-  unsigned char altColor=backgroundColor;
-  unsigned char *p;
-  unsigned char* curfont;
-  
+  short offset;
+  int i;
+
+  // TODO: Set font for M2/M3
   switch(CurMem)
     {
     case M0:
-      curfont=font;
+      SetFont((FontHndl)fontHandle);
       offset=-32;
       break;
     case M1:
-      curfont=font;
+      SetFont((FontHndl)fontHandle);
       offset=64;
       break;
     case M2:
-      curfont=fontm23;
       offset=-32;
       break;
     case M3:
-      curfont=fontm23;
-      offset=32;      
+      offset=32;
       break;
     }
 
-  if (CurMode==ModeRewrite)
+  SetForeColor(foregroundColor);
+  SetBackColor(backgroundColor);
+  
+  switch(CurMode)
     {
-      altColor=backgroundColor;
-    }
-  else if (CurMode==ModeInverse)
-    {
-      altColor=foregroundColor;
+    case ModeWrite:
+      SetTextMode(modeForeOR);
+      break;
+    case ModeRewrite:
+      SetTextMode(modeForeCopy);
+      break;
+    case ModeErase:
+      SetTextMode(modeForeBIC);
+      break;
+    case ModeInverse:
+      SetTextMode(notForeBIC);
+      break;
     }
   
-  if (CurMode==ModeErase || CurMode==ModeInverse)
-    mainColor=backgroundColor;
-  else
-    mainColor=foregroundColor;
-
-  SetSolidPenPat(mainColor);
-
-  x=scalex[(Coord->x)];
-  y=scaley[(Coord->y)+15];
-  
-  if (FastText==padF)
-    {
-      goto chardraw_with_fries;
-    }
-
-  /* the diet chardraw routine - fast text output. */
-  
-  for (i=0;i<count;++i)
-    {
-      a=*ch;
-      ++ch;
-      a+=offset;
-      p=&curfont[fontptr[a]];
-      
-      for (j=0;j<FONT_SIZE_Y;++j)
-  	{
-  	  b=*p;
-	  
-  	  for (k=0;k<FONT_SIZE_X;++k)
-  	    {
-  	      if (b&0x80) /* check sign bit. */
-		{
-		  SetSolidPenPat(mainColor);
-		  MoveTo(x,y);
-		  Line(0,0);
-		}
-
-	      ++x;
-  	      b<<=1;
-  	    }
-
-	  ++y;
-	  x-=width;
-	  ++p;
-  	}
-
-      x+=width;
-      y-=height;
-    }
-
-  return;
-
- chardraw_with_fries:
-  if (Rotate)
-    {
-      deltaX=-abs(deltaX);
-      width=-abs(width);
-      px=&y;
-      py=&x;
-    }
-    else
-    {
-      px=&x;
-      py=&y;
-    }
-  
-  if (ModeBold)
-    {
-      deltaX = deltaY = 2;
-      width<<=1;
-      height<<=1;
-    }
-  
-  for (i=0;i<count;++i)
-    {
-      a=*ch;
-      ++ch;
-      a+=offset;
-      p=&curfont[fontptr[a]];
-      for (j=0;j<FONT_SIZE_Y;++j)
-  	{
-  	  b=*p;
-
-	  if (Rotate)
-	    {
-	      px=&y;
-	      py=&x;
-	    }
-	  else
-	    {
-	      px=&x;
-	      py=&y;
-	    }
-
-  	  for (k=0;k<FONT_SIZE_X;++k)
-  	    {
-  	      if (b&0x80) /* check sign bit. */
-		{
-		  SetSolidPenPat(mainColor);
-		  if (ModeBold)
-		    {
-		      MoveTo(*px+1,*py);
-		      Line(0,0);
-		      MoveTo(*px,*py+1);
-		      Line(0,0);
-		      MoveTo(*px+1,*py+1);
-		      Line(0,0);
-		    }
-		  MoveTo(*px,*py);
-		  Line(0,0);
-		}
-	      else
-		{
-		  if (CurMode==ModeInverse || CurMode==ModeRewrite)
-		    {
-		      SetSolidPenPat(altColor);
-		      if (ModeBold)
-			{
-			  MoveTo(*px+1,*py);
-			  Line(0,0);
-			  MoveTo(*px,*py+1);
-			  Line(0,0);
-			  MoveTo(*px+1,*py+1);
-			  Line(0,0);
-			}
-		      MoveTo(*px,*py);
-		      Line(0,0);
-		    }
-		}
-
-	      x += deltaX;
-  	      b<<=1;
-  	    }
-
-	  y+=deltaY;
-	  x-=width;
-	  ++p;
-  	}
-
-      Coord->x+=width;
-      x+=width;
-      y-=height;
-    }
-
-  return;
+  /* strncpy(textBuf,ch,count); */
+  MoveTo(scalex[Coord->x],scaley[Coord->y]);
+  DrawText(ch,count);
 }
 
 /**
