@@ -428,20 +428,75 @@ void screen_tty_char(padByte theChar)
   }
 }
 
+void _screen_paint(unsigned short x, unsigned short y)
+{
+  static unsigned short xStack[320];
+  static unsigned char yStack[192];
+  unsigned char stackentry = 1;
+  unsigned char spanAbove, spanBelow;
+
+  unsigned char oldColor = GetPixel(x,y);
+
+  SetSolidPenPat(foregroundColor);
+
+  if (oldColor == foregroundColor)
+    return;
+
+  do
+    {
+      unsigned short startx;
+      while (x > 0 && GetPixel(x-1,y) == oldColor)
+        --x;
+
+      spanAbove = spanBelow = false;
+      startx=x;
+
+      while(GetPixel(x,y) == oldColor)
+        {
+          /* tgi_setpixel(x,y); */
+
+          if (y < (191))
+            {
+              unsigned char belowColor = GetPixel(x, y+1);
+              if (!spanBelow  && belowColor == oldColor)
+                {
+                  xStack[stackentry]  = x;
+                  yStack[stackentry]  = y+1;
+                  ++stackentry;
+                  spanBelow = true;
+                }
+              else if (spanBelow && belowColor != oldColor)
+                spanBelow = false;
+            }
+
+          if (y > 0)
+            {
+              unsigned char aboveColor = GetPixel(x, y-1);
+              if (!spanAbove  && aboveColor == oldColor)
+                {
+                  xStack[stackentry]  = x;
+                  yStack[stackentry]  = y-1;
+                  ++stackentry;
+                  spanAbove = true;
+                }
+              else if (spanAbove && aboveColor != oldColor)
+                spanAbove = false;
+            }
+
+          ++x;
+        }
+      MoveTo(startx,y);
+      LineTo(x-1,y);
+      --stackentry;
+      x = xStack[stackentry];
+      y = yStack[stackentry];
+    }
+  while (stackentry);
+}
+
 void screen_paint(padPt* Coord)
 {
-#ifdef SCREEN_FILL
-  LocInfo loc;
-  Rect rect;
-  LeakTable leakTable={1,{GetPixel(scalex[Coord->x],scaley[Coord->y])}};
-  Pattern pattern;
-  SetSolidPenPat(foregroundColor);
-  GetPenPat(&pattern);
-  GetPortLoc(&loc);
-  GetPortRect(&rect);
-  SeedFill(&loc,&rect,&loc,&rect,scalex[Coord->x],scaley[Coord->y],0x1002,(PatternPtr)pattern,(Pointer)&leakTable);
-#endif
-  /* jlDrawFill(scalex[Coord->x],scaley[Coord->y]); */
+  _screen_paint(scalex[Coord->x],scaley[Coord->y]);
 }
 
 /**
