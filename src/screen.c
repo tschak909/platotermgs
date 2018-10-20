@@ -222,11 +222,11 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
     {
     case M0:
       SetFont((FontHndl)fontHandle);
-      offset=-32;
+      offset=0;
       break;
     case M1:
       SetFont((FontHndl)fontHandle);
-      offset=64;
+      offset=96;
       break;
     case M2:
       offset=-32;
@@ -257,6 +257,11 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
       /* SetPenMode(notBIC); */
       SetTextMode(notForeBIC);
       break;
+    }
+
+  for (i=0;i<count;++i)
+    {
+      ch[i]+=offset;
     }
   
   MoveTo(scalex[Coord->x],scaley[Coord->y]);
