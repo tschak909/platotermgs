@@ -5,7 +5,6 @@
 #include <qdaux.h>
 #include <orca.h>
 #include <types.h>
-#include "src/screen_fill.h"
 #include "src/protocol.h"
 #include "src/font.h"
 #include "src/scale.h"
