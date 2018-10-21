@@ -4,7 +4,6 @@ PLATO_OBJS=obj/io.a \
 	obj/main.a \
 	obj/protocol.a \
 	obj/screen.a \
-	obj/screen_fill.a \
 	obj/terminal.a \
 	obj/prompt.a \
 	obj/touch.a
@@ -15,7 +14,6 @@ PLATO_OBJS_PREFIX=obj/io \
 	obj/main \
 	obj/protocol \
 	obj/screen \
-	obj/screen_fill \
 	obj/terminal \
 	obj/prompt \
 	obj/touch
