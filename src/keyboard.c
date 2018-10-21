@@ -58,7 +58,14 @@ void keyboard_main(void)
 	}
       else if (event.modifiers & controlKey)
 	{
-	  keyboard_out(shift_key_to_pkey[key]);
+	  if (event.modifiers & shiftKey)
+	    {
+	      keyboard_out(shift_key_to_pkey[key]);
+	    }
+	  else
+	    {
+	      keyboard_out(key_to_pkey[key]);
+	    }
 	}
       else if (TTY)
 	{
