@@ -52,7 +52,7 @@ void keyboard_main(void)
 	      prompt_clr();
 	    }
 	}
-      else if (event.modifiers & (shiftKey | controlKey))
+      else if (event.modifiers & shiftKey) || (event.modifiers & controlKey))
 	{
 	  keyboard_out(shift_key_to_pkey[key]);
 	}
