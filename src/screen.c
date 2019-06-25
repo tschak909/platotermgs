@@ -50,9 +50,9 @@ void screen_init(void)
   fontPtr=*(FontHndl)fontHandle;
 
   // Initialize user font handle
-  fontHandle=NewHandle(1657,mmID,0,NULL);
-  PtrToHand((Pointer)font,fontHandle,1657);
-  fontPtr=*(FontHndl)fontHandle;
+  userfontHandle=NewHandle(1657,mmID,0,NULL);
+  PtrToHand((Pointer)userfont,userfontHandle,1657);
+  userfontPtr=*(FontHndl)userfontHandle;
 }
 
 /**

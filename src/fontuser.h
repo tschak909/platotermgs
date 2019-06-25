@@ -1,7 +1,7 @@
 #ifndef FONT_USER_H
 #define FONT_USER_H
 
-unsigned char font_user[1657]={
+unsigned char userfont[1657]={
 0x06,
 0x50,
 0x4c,
