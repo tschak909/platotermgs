@@ -7,6 +7,7 @@
 #include <types.h>
 #include "src/protocol.h"
 #include "src/font.h"
+#include "src/fontuser.h"
 #include "src/scale.h"
 
 unsigned char CharWide=8;
@@ -22,6 +23,9 @@ padRGB palette[16];
 
 Handle fontHandle;
 Font* fontPtr;
+
+Handle userfontHandle;
+Font* userfontPtr;
 
 static char textBuf[128];
 
@@ -43,6 +47,11 @@ void screen_init(void)
   // Initialize font handle and copy font into it.
   fontHandle=NewHandle(2575,mmID,0,NULL);
   PtrToHand((Pointer)font,fontHandle,2575);
+  fontPtr=*(FontHndl)fontHandle;
+
+  // Initialize user font handle
+  fontHandle=NewHandle(1657,mmID,0,NULL);
+  PtrToHand((Pointer)font,fontHandle,1657);
   fontPtr=*(FontHndl)fontHandle;
 }
 
