@@ -50,9 +50,9 @@ void screen_init(void)
   fontPtr=*(FontHndl)fontHandle;
 
   // Initialize user font handle
-  userfontHandle=NewHandle(1657,mmID,0,NULL);
-  PtrToHand((Pointer)userfont,userfontHandle,1657);
-  userfontPtr=*(FontHndl)userfontHandle;
+  userfontHandle=NewHandle(1660,mmID,0,NULL);
+  PtrToHand((Pointer)userfont,userfontHandle,1660);
+  userfontPtr=*(FontHndl)userfontHandle;  
 }
 
 /**
@@ -237,9 +237,11 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
       offset=96;
       break;
     case M2:
+      SetFont((FontHndl)userfontHandle);
       offset=-32;
       break;
     case M3:
+      SetFont((FontHndl)userfontHandle);
       offset=32;
       break;
     }
