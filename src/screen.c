@@ -38,6 +38,7 @@ extern Handle dpHandle; /* main.c */
  */
 void screen_init(void)
 {
+  int i;
   startgraph(320);
   SetPenMode(0);
   SetPenSize(1,1);
@@ -48,15 +49,17 @@ void screen_init(void)
   fontHandle=NewHandle(2575,mmID,0,NULL);
   PtrToHand((Pointer)font,fontHandle,2575);
   fontPtr=*(FontHndl)fontHandle;
-
   // Initialize user font handle
-  userfontHandle=NewHandle(1660,mmID,0,NULL);
-  PtrToHand((Pointer)userfont,userfontHandle,1660);
-  userfontPtr=*(FontHndl)userfontHandle;  
+  userfontHandle=NewHandle(1650,mmID,0,NULL);
+  PtrToHand((Pointer)userfont,userfontHandle,1650);
+  userfontPtr=*(FontHndl)userfontHandle;
+  HLock(userfontHandle);
+  
+  HUnlock(userfontHandle);
 }
 
 /**
- * screen_wait(void) - Sleep for approx 16.67ms
+ * Screen_wait(void) - Sleep for approx 16.67ms
  */
 void screen_wait(void)
 {
