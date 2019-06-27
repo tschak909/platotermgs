@@ -33,6 +33,8 @@ extern padBool FastText; /* protocol.c */
 extern Word mmID; /* main.c */
 extern Handle dpHandle; /* main.c */
 
+unsigned char* fontData;
+
 /**
  * screen_init() - Set up the screen
  */
@@ -50,10 +52,53 @@ void screen_init(void)
   PtrToHand((Pointer)font,fontHandle,2575);
   fontPtr=*(FontHndl)fontHandle;
   // Initialize user font handle
-  userfontHandle=NewHandle(1650,mmID,0,NULL);
-  PtrToHand((Pointer)userfont,userfontHandle,1650);
+  userfontHandle=NewHandle(2274,mmID,0,NULL);
+  PtrToHand((Pointer)userfont,userfontHandle,2274);
   userfontPtr=*(FontHndl)userfontHandle;
+}
+
+/**
+ * screen_write_font(charnum,chardata)
+ * Write font data from terminal to screen font
+ * This is put here due to header collision in terminal.c
+ *
+ * Yes, I know these are absolute data offsets, but I 
+ * don't expect the placeholder font data to change...
+ */
+void screen_font_write(unsigned char charnum, char* chardata)
+{
+  short o=0x1b2+charnum;
   HLock(userfontHandle);
+
+  fontData=*(userfontHandle);
+
+  fontData[o+0x0000]=chardata[0];
+  fontData[o+0x0084]=chardata[1];
+  fontData[o+0x0108]=chardata[2];
+  fontData[o+0x018c]=chardata[3];
+  fontData[o+0x0210]=chardata[4];
+  fontData[o+0x0294]=chardata[5];
+  
+  HUnlock(userfontHandle);
+}
+
+/**
+ * screen_font_clear_glyph(charnum)
+ * Clear a glyph from the M2/M3 font
+ */
+void screen_font_clear_glyph(unsigned char charnum)
+{
+  short o=0x1b2+charnum;
+  HLock(userfontHandle);
+
+  fontData=*(userfontHandle);
+
+  fontData[o+0x0000]=0x00;
+  fontData[o+0x0084]=0x00;
+  fontData[o+0x0108]=0x00;
+  fontData[o+0x018c]=0x00;
+  fontData[o+0x0210]=0x00;
+  fontData[o+0x0294]=0x00;
   
   HUnlock(userfontHandle);
 }

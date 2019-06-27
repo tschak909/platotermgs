@@ -217,6 +217,9 @@ void terminal_ext_out(padByte value)
 static unsigned char char_data[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 				  0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
+// Scaled character data to send over the wall.
+unsigned char scaled_char_data[6]={0x00,0x00,0x00,0x00,0x00,0x00};
+
 static unsigned char BTAB[]={0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01}; // flip one bit on (OR)
 static unsigned char BTAB_5[]={0x08,0x10,0x10,0x20,0x20,0x40,0x80,0x80}; // flip one bit on for the 5x6 matrix (OR)
 
@@ -254,52 +257,66 @@ extern unsigned short fontptr[160];
  */
 void terminal_char_load(padWord charnum, charData theChar)
 {
-  /*   // Clear char data.  */
-  /* memset(char_data,0,sizeof(char_data)); */
-  /* memset(PIX_WEIGHTS,0,sizeof(PIX_WEIGHTS)); */
-  /* memset(&fontm23[fontptr[charnum]],0,6); */
+    // Clear char data.
+  memset(char_data,0,sizeof(char_data));
+  memset(PIX_WEIGHTS,0,sizeof(PIX_WEIGHTS));
+  screen_font_clear_glyph(charnum);
   
-  /* // Transpose character data.   */
-  /* for (curr_word=0;curr_word<8;curr_word++) */
-  /*   { */
-  /*     for (u=16; u-->0; ) */
-  /* 	{ */
-  /* 	  if (theChar[curr_word] & 1<<u) */
-  /* 	    { */
-  /* 	      pix_cnt++; */
-  /* 	      PIX_WEIGHTS[TAB_0_25[TAB_0_5[u]]+TAB_0_4[curr_word]]++; */
-  /* 	      char_data[u^0x0F&0x0F]|=BTAB[curr_word]; */
-  /* 	    } */
-  /* 	} */
-  /*   } */
+  // Transpose character data.
+  for (curr_word=0;curr_word<8;curr_word++)
+    {
+      for (u=16; u-->0; )
+  	{
+  	  if (theChar[curr_word] & 1<<u)
+  	    {
+  	      pix_cnt++;
+  	      PIX_WEIGHTS[TAB_0_25[TAB_0_5[u]]+TAB_0_4[curr_word]]++;
+  	      char_data[u^0x0F&0x0F]|=BTAB[curr_word];
+  	    }
+  	}
+    }
 
-  /* // Determine algorithm to use for number of pixels. */
-  /* // Algorithm A is used when roughly half of the # of pixels are set. */
-  /* // Algorithm B is used either when the image is densely or sparsely populated (based on pix_cnt). */
-  /* if ((54 <= pix_cnt) && (pix_cnt < 85)) */
-  /*   { */
-  /*     // Algorithm A - approx Half of pixels are set */
-  /*     for (u=6; u-->0; ) */
-  /* 	{ */
-  /* 	  for (v=5; v-->0; ) */
-  /* 	    { */
-  /* 	      if (PIX_WEIGHTS[TAB_0_25[u]+v] >= PIX_THRESH[TAB_0_25[u]+v]) */
-  /* 		fontm23[fontptr[charnum]+u]|=BTAB[v]; */
-  /* 	    } */
-  /* 	} */
-  /*   } */
-  /* else if ((pix_cnt < 54) || (pix_cnt >= 85)) */
-  /*   { */
-  /*     // Algorithm B - Sparsely or heavily populated bitmaps */
-  /*     for (u=16; u-->0; ) */
-  /* 	{ */
-  /* 	  for (v=8; v-->0; ) */
-  /* 	    { */
-  /* 	      if (char_data[u] & (1<<v)) */
-  /* 		{ */
-  /* 		  fontm23[fontptr[charnum]+TAB_0_5i[u]]|=BTAB_5[v]; */
-  /* 		} */
-  /* 	    } */
-  /* 	} */
-  /*   } */
+  // Determine algorithm to use for number of pixels.
+  // Algorithm A is used when roughly half of the # of pixels are set.
+  // Algorithm B is used either when the image is densely or sparsely populated (based on pix_cnt).
+  if ((54 <= pix_cnt) && (pix_cnt < 85))
+    {
+      // Algorithm A - approx Half of pixels are set
+      for (u=6; u-->0; )
+  	{
+  	  for (v=5; v-->0; )
+  	    {
+  	      if (PIX_WEIGHTS[TAB_0_25[u]+v] >= PIX_THRESH[TAB_0_25[u]+v])
+  		scaled_char_data[u]|=BTAB[v];
+  	    }
+  	}
+    }
+  else if ((pix_cnt < 54) || (pix_cnt >= 85))
+    {
+      // Algorithm B - Sparsely or heavily populated bitmaps
+      for (u=16; u-->0; )
+	{
+	  if (pix_cnt >= 85)
+	    char_data[u]^=0xFF;
+
+	  for (v=8; v-->0; )
+	    {
+	      if (char_data[u] & (1<<v))
+		{
+		  scaled_char_data[TAB_0_5i[u]]|=BTAB_5[v];
+		}
+	    }
+	}
+      if (pix_cnt >= 85)
+      	{
+      	  for (u=6; u-->0; )
+      	    {
+      	      scaled_char_data[u]^=0xFF;
+      	      scaled_char_data[u]&=0xF8;
+      	    }
+      	}
+    }
+
+  screen_font_write(charnum,scaled_char_data);
+  
 }
