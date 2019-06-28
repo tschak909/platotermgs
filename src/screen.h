@@ -22,7 +22,13 @@ void screen_init(void);
  * Write font data from terminal to screen font
  * This is put here due to header collision in terminal.c
  */
-void screen_font_write(unsigned char charnum, char* chardata);
+void screen_font_write(unsigned char charnum,
+		       unsigned char c0,
+		       unsigned char c1,
+		       unsigned char c2,
+		       unsigned char c3,
+		       unsigned char c4,
+		       unsigned char c5);
 
 /**
  * screen_wait(void) - Sleep for approx 16.67ms

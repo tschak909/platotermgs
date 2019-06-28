@@ -54,7 +54,7 @@ void screen_init(void)
   // Initialize user font handle
   userfontHandle=NewHandle(2274,mmID,0,NULL);
   PtrToHand((Pointer)userfont,userfontHandle,2274);
-  userfontPtr=*(FontHndl)userfontHandle;
+  userfontPtr=*(FontHndl)userfontHandle;  
 }
 
 /**
@@ -65,19 +65,24 @@ void screen_init(void)
  * Yes, I know these are absolute data offsets, but I 
  * don't expect the placeholder font data to change...
  */
-void screen_font_write(unsigned char charnum, char* chardata)
+void screen_font_write(unsigned char charnum,
+		       unsigned char c0,
+		       unsigned char c1,
+		       unsigned char c2,
+		       unsigned char c3,
+		       unsigned char c4,
+		       unsigned char c5)
 {
-  short o=0x1b2+charnum;
   HLock(userfontHandle);
 
   fontData=*(userfontHandle);
 
-  fontData[o+0x0000]=chardata[0];
-  fontData[o+0x0084]=chardata[1];
-  fontData[o+0x0108]=chardata[2];
-  fontData[o+0x018c]=chardata[3];
-  fontData[o+0x0210]=chardata[4];
-  fontData[o+0x0294]=chardata[5];
+  fontData[0x1b2+charnum+0x0000]=c0;
+  fontData[0x1b2+charnum+0x0084]=c1;
+  fontData[0x1b2+charnum+0x0108]=c2;
+  fontData[0x1b2+charnum+0x018c]=c3;
+  fontData[0x1b2+charnum+0x0210]=c4;
+  fontData[0x1b2+charnum+0x0294]=c5;
   
   HUnlock(userfontHandle);
 }
@@ -88,17 +93,16 @@ void screen_font_write(unsigned char charnum, char* chardata)
  */
 void screen_font_clear_glyph(unsigned char charnum)
 {
-  short o=0x1b2+charnum;
   HLock(userfontHandle);
 
   fontData=*(userfontHandle);
 
-  fontData[o+0x0000]=0x00;
-  fontData[o+0x0084]=0x00;
-  fontData[o+0x0108]=0x00;
-  fontData[o+0x018c]=0x00;
-  fontData[o+0x0210]=0x00;
-  fontData[o+0x0294]=0x00;
+  fontData[0x1b2+charnum+0x0000]=0x00;
+  fontData[0x1b2+charnum+0x0084]=0x00;
+  fontData[0x1b2+charnum+0x0108]=0x00;
+  fontData[0x1b2+charnum+0x018c]=0x00;
+  fontData[0x1b2+charnum+0x0210]=0x00;
+  fontData[0x1b2+charnum+0x0294]=0x00;
   
   HUnlock(userfontHandle);
 }

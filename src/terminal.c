@@ -217,8 +217,7 @@ void terminal_ext_out(padByte value)
 static unsigned char char_data[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 				  0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
-// Scaled character data to send over the wall.
-unsigned char scaled_char_data[6]={0x00,0x00,0x00,0x00,0x00,0x00};
+static unsigned char scaled_char_data[6]={0x00,0x00,0x00,0x00,0x00,0x00};
 
 static unsigned char BTAB[]={0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01}; // flip one bit on (OR)
 static unsigned char BTAB_5[]={0x08,0x10,0x10,0x20,0x20,0x40,0x80,0x80}; // flip one bit on for the 5x6 matrix (OR)
@@ -248,8 +247,6 @@ static unsigned char pix_cnt;     // total # of pixels
 static unsigned char curr_word;   // current word
 static unsigned char u,v;       // loop counters
 
-extern unsigned char fontm23[768];
-extern unsigned short fontptr[160];
 
 /**
  * terminal_char_load - Store a character into the user definable
@@ -257,23 +254,25 @@ extern unsigned short fontptr[160];
  */
 void terminal_char_load(padWord charnum, charData theChar)
 {
-    // Clear char data.
+  // Clear char data. 
   memset(char_data,0,sizeof(char_data));
   memset(PIX_WEIGHTS,0,sizeof(PIX_WEIGHTS));
+  memset(scaled_char_data,0,sizeof(scaled_char_data));
   screen_font_clear_glyph(charnum);
+  pix_cnt=0;
   
-  // Transpose character data.
+  // Transpose character data.  
   for (curr_word=0;curr_word<8;curr_word++)
     {
       for (u=16; u-->0; )
-  	{
-  	  if (theChar[curr_word] & 1<<u)
-  	    {
-  	      pix_cnt++;
-  	      PIX_WEIGHTS[TAB_0_25[TAB_0_5[u]]+TAB_0_4[curr_word]]++;
-  	      char_data[u^0x0F&0x0F]|=BTAB[curr_word];
-  	    }
-  	}
+	{
+	  if (theChar[curr_word] & 1<<u)
+	    {
+	      pix_cnt++;
+	      PIX_WEIGHTS[TAB_0_25[TAB_0_5[u]]+TAB_0_4[curr_word]]++;
+	      char_data[u^0x0F&0x0F]|=BTAB[curr_word];
+	    }
+	}
     }
 
   // Determine algorithm to use for number of pixels.
@@ -287,7 +286,7 @@ void terminal_char_load(padWord charnum, charData theChar)
   	  for (v=5; v-->0; )
   	    {
   	      if (PIX_WEIGHTS[TAB_0_25[u]+v] >= PIX_THRESH[TAB_0_25[u]+v])
-  		scaled_char_data[u]|=BTAB[v];
+		scaled_char_data[u]|=BTAB[v];
   	    }
   	}
     }
@@ -311,12 +310,18 @@ void terminal_char_load(padWord charnum, charData theChar)
       	{
       	  for (u=6; u-->0; )
       	    {
-      	      scaled_char_data[u]^=0xFF;
-      	      scaled_char_data[u]&=0xF8;
+	      scaled_char_data[u]^=0xFF;
+	      scaled_char_data[u]&=0xF8;
       	    }
       	}
     }
 
-  screen_font_write(charnum,scaled_char_data);
+  screen_font_write(charnum,
+		    scaled_char_data[0],
+		    scaled_char_data[1],
+		    scaled_char_data[2],
+		    scaled_char_data[3],
+		    scaled_char_data[4],
+		    scaled_char_data[5]);
   
 }
