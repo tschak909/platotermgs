@@ -196,6 +196,23 @@ short screen_color(padRGB* theColor)
 }
 
 /**
+ * Set pen mode for drawing operations
+ */
+void screen_set_pen_mode(void)
+{
+  if (CurMode==ModeErase || CurMode==ModeInverse)
+    {
+      SetPenMode(modeBIC);
+    }
+  else
+    {
+      SetPenMode(modeCopy);
+    }
+
+  SetSolidPenPat(foregroundColor);
+}
+
+/**
  * screen_clear - Clear the screen
  */
 void screen_clear(void)
@@ -228,11 +245,8 @@ void screen_block_draw(padPt* Coord1, padPt* Coord2)
   rect.h1=scalex[Coord1->x];
   rect.v2=scaley[Coord2->y];
   rect.h2=scalex[Coord2->x];
-  
-  if (CurMode==ModeErase || CurMode==ModeInverse)
-    SetSolidPenPat(backgroundColor);
-  else
-    SetSolidPenPat(foregroundColor);
+
+  screen_set_pen_mode();
 
   PaintRect(&rect);
 }
@@ -242,15 +256,7 @@ void screen_block_draw(padPt* Coord1, padPt* Coord2)
  */
 void screen_dot_draw(padPt* Coord)
 {
-  if (CurMode==ModeErase || CurMode==ModeInverse)
-    {
-      SetSolidPenPat(backgroundColor);
-    }
-  else
-    {
-      SetSolidPenPat(foregroundColor);
-    }
-
+  screen_set_pen_mode();
   MoveTo(scalex[Coord->x],scaley[Coord->y]);
   Line(0,0);
 }
@@ -260,11 +266,7 @@ void screen_dot_draw(padPt* Coord)
  */
 void screen_line_draw(padPt* Coord1, padPt* Coord2)
 {
-  if (CurMode==ModeErase || CurMode==ModeInverse)
-    SetSolidPenPat(backgroundColor);
-  else
-    SetSolidPenPat(foregroundColor);
-
+  screen_set_pen_mode();
   MoveTo(scalex[Coord1->x],scaley[Coord1->y]);
   LineTo(scalex[Coord2->x],scaley[Coord2->y]);
 }
@@ -304,19 +306,19 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
   switch(CurMode)
     {
     case ModeWrite:
-      /* SetPenMode(modeOR); */
+      SetPenMode(modeOR);
       SetTextMode(modeForeOR);
       break;
     case ModeRewrite:
-      /* SetPenMode(modeCopy); */
+      SetPenMode(modeCopy);
       SetTextMode(modeForeCopy);
       break;
     case ModeErase:
-      /* SetPenMode(modeBIC); */
+      SetPenMode(modeBIC);
       SetTextMode(modeForeBIC);
       break;
     case ModeInverse:
-      /* SetPenMode(notBIC); */
+      SetPenMode(notBIC);
       SetTextMode(notForeBIC);
       break;
     }
