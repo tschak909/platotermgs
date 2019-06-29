@@ -9,6 +9,7 @@
 #include "src/font.h"
 #include "src/fontuser.h"
 #include "src/scale.h"
+#include "src/fontbold.h"
 
 unsigned char CharWide=8;
 unsigned char CharHigh=16;
@@ -24,10 +25,13 @@ padRGB palette[16];
 Handle fontHandle;
 Font* fontPtr;
 
+Handle boldfontHandle;
+Font* boldfontPtr;
+
 Handle userfontHandle;
 Font* userfontPtr;
 
-static char textBuf[128];
+/* static char textBuf[128]; */
 
 extern padBool FastText; /* protocol.c */
 extern Word mmID; /* main.c */
@@ -51,6 +55,12 @@ void screen_init(void)
   fontHandle=NewHandle(2575,mmID,0,NULL);
   PtrToHand((Pointer)font,fontHandle,2575);
   fontPtr=*(FontHndl)fontHandle;
+
+  // Initialize the bold font handle.
+  boldfontHandle=NewHandle(2746,mmID,0,NULL);
+  PtrToHand((Pointer)boldfont,boldfontHandle,2746);
+  boldfontPtr=*(FontHndl)boldfontHandle;
+  
   // Initialize user font handle
   userfontHandle=NewHandle(2274,mmID,0,NULL);
   PtrToHand((Pointer)userfont,userfontHandle,2274);
@@ -283,11 +293,17 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
   switch(CurMem)
     {
     case M0:
-      SetFont((FontHndl)fontHandle);
+      if (ModeBold==padT)
+	SetFont((FontHndl)boldfontHandle);
+      else
+	SetFont((FontHndl)fontHandle);
       offset=0;
       break;
     case M1:
-      SetFont((FontHndl)fontHandle);
+      if (ModeBold==padT)
+	SetFont((FontHndl)boldfontHandle);
+      else
+	SetFont((FontHndl)fontHandle);
       offset=96;
       break;
     case M2:
