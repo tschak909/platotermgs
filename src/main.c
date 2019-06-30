@@ -1,5 +1,6 @@
 #include <Memory.h>
 #include <Event.h>
+#include <MiscTool.h>
 #include "src/protocol.h"
 #include "src/splash.h"
 #include "src/screen.h"
@@ -24,6 +25,8 @@ int main(void)
 
   EMStartUp((Word)*dpHandle, 0x14, 0, 320, 0, 200, mmID);
 
+  MTStartUp();
+  
   screen_init();
   ShowPLATO(splash,sizeof(splash));
   terminal_initial_position();
@@ -50,6 +53,7 @@ int main(void)
   io_done();
   touch_done();
   screen_done();
+  MTShutDown();
   EMShutDown();
   DisposeHandle(dpHandle);
   return 0;  

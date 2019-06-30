@@ -1,6 +1,7 @@
 #include <Control.h>
 #include <Dialog.h>
 #include <Memory.h>
+#include <MiscTool.h>
 #include <quickdraw.h>
 #include <qdaux.h>
 #include <orca.h>
@@ -127,6 +128,7 @@ void screen_wait(void)
  */
 void screen_beep(void)
 {
+  SysBeep2(sbAlertWindow);
 }
 
 /**
