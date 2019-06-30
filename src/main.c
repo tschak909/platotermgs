@@ -46,6 +46,11 @@ int main(void)
   io_done();
   touch_done();
   screen_done();
-  return 0;
-  
+
+  io_done();
+  touch_done();
+  screen_done();
+  EMShutDown();
+  DisposeHandle(dpHandle);
+  return 0;  
 }

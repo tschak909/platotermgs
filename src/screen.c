@@ -527,5 +527,11 @@ void screen_paint(padPt* Coord)
  */
 void screen_done(void)
 {
+  fontPtr=NULL;
+  boldfontPtr=NULL;
+  userfontPtr=NULL;
+  DisposeHandle(fontHandle);
+  DisposeHandle(boldfontHandle);
+  DisposeHandle(userfontHandle);
   endgraph();
 }
