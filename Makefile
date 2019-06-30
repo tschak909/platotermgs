@@ -29,10 +29,11 @@ obj:
 	mkdir -p $@ dist
 
 plato : $(PLATO_OBJS)
-	iix -DKeepType=S16 link $(PLATO_OBJS_PREFIX) keep=dist/plato.Sys16#B30000
+	iix -DKeepType=S16 link $(PLATO_OBJS_PREFIX) keep=dist/PLATOTERM#B30000
 	rm -rf dist/plato.2mg
 	cadius createvolume dist/plato.2mg plato 800KB
-	cadius addfile dist/plato.2mg plato dist/PLATO.Sys16#B30000
+	cadius addfile dist/plato.2mg plato dist/PLATOTERM#B30000
+	cadius addfile dist/plato.2mg plato dist.files/COPYING
 
 obj/%.a : src/%.c
 	iix $(ORCA_FLAGS) compile -I $< keep=$(@D)/$*
