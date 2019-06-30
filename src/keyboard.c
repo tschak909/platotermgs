@@ -33,7 +33,27 @@ void keyboard_main(void)
     {
       unsigned char key=event.message;
       unsigned char tmp[8];
-      if (event.modifiers & appleKey)
+      if (TTY)
+	{
+	  keyboard_out_tty(key);
+	}
+      else if ((event.modifiers & shiftKey) && (key==0x0D))
+	{
+	  keyboard_out(PKEY_NEXT1);
+	}
+      else if ((event.modifiers & shiftKey) && (key==0x20))
+	{
+	  keyboard_out(PKEY_BACKSPACE);
+	}
+      else if (((event.modifiers & appleKey) && (event.modifiers & shiftKey)) && ((key==0x48) || (key==0x68)))
+	{
+	  keyboard_out(PKEY_HELP1);
+	}
+      else if ((event.modifiers & appleKey) && ((key==0x48) || (key==0x68)))
+	{
+	  keyboard_out(PKEY_HELP);
+	}
+      else if (event.modifiers & appleKey)
 	{
 	  // Special keys
 	  if (key=='x') // APPLE-X, exit
@@ -63,19 +83,11 @@ void keyboard_main(void)
 	      keyboard_out(key_to_pkey[key]);
 	    }
 	}
-      else if (TTY)
-	{
-	  keyboard_out_tty(key);
-	}
       else
 	{
 	  keyboard_out(key_to_pkey[key]);
 	}
     }
-}
-
-void keyboard_clear(void)
-{
 }
 
 void keyboard_out_tty(char ch)
