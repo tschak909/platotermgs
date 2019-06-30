@@ -152,11 +152,13 @@ void screen_remap_palette(void)
 void screen_foreground(padRGB* theColor)
 {
   short index;
-  index=screen_color(theColor);
-  foregroundColor=index;
   foreground_rgb._red=theColor->_red;
   foreground_rgb._green=theColor->_green;
   foreground_rgb._blue=theColor->_blue;
+  foregroundColor=screen_color_matching(theColor);
+  SetSolidPenPat(foregroundColor);
+  SetForeColor(foregroundColor);
+  screen_remap_palette();
 }
 
 /**
@@ -165,11 +167,13 @@ void screen_foreground(padRGB* theColor)
 void screen_background(padRGB* theColor)
 {
   short index;
-  index=screen_color(theColor);
-  backgroundColor=index;
   background_rgb._red=theColor->_red;
   background_rgb._green=theColor->_green;
   background_rgb._blue=theColor->_blue;
+  backgroundColor=screen_color_matching(theColor);
+  SetSolidBackPat(backgroundColor);
+  SetBackColor(backgroundColor);
+  screen_remap_palette();
 }
 
 /**
@@ -177,30 +181,27 @@ void screen_background(padRGB* theColor)
  */
 short screen_color_matching(padRGB* theColor)
 {
-  int i=0;
-  for (i=0;i<16;++i)
+  unsigned char i;
+  for (i=0;i<8;i++)
     {
-      if ((palette[i]._red  ==(theColor->_red)) &&
-	  (palette[i]._green==(theColor->_green)) &&
-	  (palette[i]._blue ==(theColor->_blue)))
-        return i;
-      else if (i>highestColorIndex)
-        return ++highestColorIndex;
-    }
-  return -1;
-}
-
-/**
- * Set selected screen color (fg/bg)
- */
-short screen_color(padRGB* theColor)
-{
-  short index=screen_color_matching(theColor);
-  palette[index]._red=theColor->_red;
-  palette[index]._green=theColor->_green;
-  palette[index]._blue=theColor->_blue;
-  screen_remap_palette();
-  return index;
+      if (i>highestColorIndex)
+	{
+	  palette[i]._red=theColor->_red;
+	  palette[i]._green=theColor->_green;
+	  palette[i]._blue=theColor->_blue;
+	  highestColorIndex++;
+	  return i;
+	}
+      else
+	{
+	  if ((palette[i]._red==theColor->_red) && 
+	      (palette[i]._green==theColor->_green) && 
+	      (palette[i]._blue==theColor->_blue))
+	    {
+	      return i;
+	    }
+	}
+    }  
 }
 
 /**
@@ -221,25 +222,64 @@ void screen_set_pen_mode(void)
 }
 
 /**
+ * screen_clear_palette - Clear the palette
+ */
+void screen_clear_palette(void)
+{
+  int i;
+  for (i=0;i<16;i++)
+    {
+      palette[i]._red=0;
+      palette[i]._green=0;
+      palette[i]._blue=0;
+    }
+}
+
+/**
  * screen_clear - Clear the screen
  */
 void screen_clear(void)
 {
-  memset(palette,-1,sizeof(palette));
   highestColorIndex=0;
-  palette[0]=background_rgb;
-  ++highestColorIndex;
+  screen_clear_palette();
+
+  foregroundColor=backgroundColor=0;
+  
+  palette[0]._red=background_rgb._red;
+  palette[0]._green=background_rgb._green;
+  palette[0]._blue=background_rgb._blue;
 
   if ((background_rgb._red   != foreground_rgb._red) &&
       (background_rgb._green != foreground_rgb._green) &&
       (background_rgb._blue  != foreground_rgb._blue))
     {
-      palette[1]=foreground_rgb;
-      ++highestColorIndex;
+      palette[1]._red=foreground_rgb._red;
+      palette[1]._green=foreground_rgb._green;
+      palette[1]._blue=foreground_rgb._blue;
+      highestColorIndex++;
+      foregroundColor=1;
     }
 
+  // Finally, a fall back, if somehow, color 0 and color 1 are black, fix it.
+  if ((palette[1]._red==0) &&
+      (palette[1]._green==0) &&
+      (palette[1]._blue==0) &&
+      (palette[0]._red==0) &&
+      (palette[0]._green==0) &&
+      (palette[0]._blue==0))
+    {
+      palette[0]._red=palette[0]._green=palette[0]._blue=0;
+      palette[1]._red=palette[1]._green=palette[1]._blue=255;
+      foregroundColor=1;
+      backgroundColor=0;
+      foreground_rgb._red=foreground_rgb._green=foreground_rgb._blue=255;
+      background_rgb._red=background_rgb._green=background_rgb._blue=0;
+    }
+  
   screen_remap_palette();
+  
   ClearScreen(0); // 0 is always the new remapped background color.
+  SetSolidPenPat(foregroundColor);
 }
 
 /**
