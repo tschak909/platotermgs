@@ -31,8 +31,6 @@ Font* boldfontPtr;
 Handle userfontHandle;
 Font* userfontPtr;
 
-/* static char textBuf[128]; */
-
 extern padBool FastText; /* protocol.c */
 extern Word mmID; /* main.c */
 extern Handle dpHandle; /* main.c */
@@ -256,8 +254,9 @@ void screen_block_draw(padPt* Coord1, padPt* Coord2)
   rect.v2=scaley[Coord2->y];
   rect.h2=scalex[Coord2->x];
 
-  screen_set_pen_mode();
-
+  /* screen_set_pen_mode(); */
+  SetPenMode(modeCopy);
+  SetSolidPenPat(backgroundColor);
   PaintRect(&rect);
 }
 
@@ -289,6 +288,9 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
   short offset;
   int i;
 
+  SetPenMode(0);
+  SetTextMode(0);
+  
   // TODO: Set font for M2/M3
   switch(CurMem)
     {
@@ -316,29 +318,42 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
       break;
     }
 
+  if (CurMode==ModeRewrite)
+    {
+      Rect r;
+      r.h1=scalex[Coord->x];
+      r.v1=scaley[Coord->y]-6;
+      r.h2=r.h1+(count*5);
+      r.v2=scaley[Coord->y];
+      SetSolidPenPat(0);
+      SetPenMode(modeCopy);
+      PaintRect(&r);
+    }
+  
+  SetFontFlags(1);
   SetForeColor(foregroundColor);
   SetBackColor(backgroundColor);
   
   switch(CurMode)
     {
     case ModeWrite:
-      SetPenMode(modeOR);
       SetTextMode(modeForeOR);
+      SetPenMode(modeOR);
       break;
     case ModeRewrite:
-      SetPenMode(modeCopy);
-      SetTextMode(modeForeCopy);
+      SetTextMode(modeForeOR);
+      SetPenMode(modeOR);
       break;
     case ModeErase:
-      SetPenMode(modeBIC);
       SetTextMode(modeForeBIC);
+      SetPenMode(modeBIC);
       break;
     case ModeInverse:
-      SetPenMode(notBIC);
-      SetTextMode(notForeBIC);
+      SetTextMode(notForeCOPY);
+      SetPenMode(notCopy);
       break;
     }
-
+  
   for (i=0;i<count;++i)
     {
       ch[i]+=offset;
@@ -446,6 +461,19 @@ void _screen_paint(unsigned short x, unsigned short y)
       y = yStack[stackentry];
     }
   while (stackentry);
+}
+
+void _screen_paint_seedfill(unsigned short x, unsigned short y)
+{
+  LocInfo loc;
+  Rect rect;
+  LeakTable leakTable={1,{GetPixel(x,y)}};
+  Pattern pattern;
+  SetSolidPenPat(foregroundColor);
+  GetPenPat(&pattern);
+  GetPortLoc(&loc);
+  GetPortRect(&rect);
+  SeedFill(&loc,&rect,&loc,&rect,x,y,0x1002,(PatternPtr)pattern,(Pointer)&leakTable);
 }
 
 void screen_paint(padPt* Coord)
